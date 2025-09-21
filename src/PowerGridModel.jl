@@ -8,6 +8,7 @@ include("buffer.jl")
 include("metadata.jl")
 include("dataset.jl")
 include("model.jl")
+include("options.jl")
 
 function lib_pgm_location()
     power_grid_model_c_jll.libpower_grid_model_c

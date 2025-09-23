@@ -25,7 +25,7 @@ function create_deserializer_from_binary_buffer(handle::Ptr{Cvoid}, data_ptr::Pt
     end
     # pgm.create_serializer(handle,dset_ptr,0)
 
-    function serializer_get_to_binary_buffer(handle::Ptr{Cvoid}, serializer::Ptr{PGM_Serializer}, use_compact_list::PGM_Idx, data::Ptr{Ptr{Cchar}}, size::PGM_Idx)
+    function serializer_get_to_binary_buffer(handle::Ptr{Cvoid}, serializer::Ptr{PGM_Serializer}, use_compact_list::PGM_Idx, data::Ptr{Cvoid}, size::PGM_Idx)
         ccall((:PGM_serializer_get_to_binary_buffer, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Serializer}, PGM_Idx, Ptr{Ptr{Cchar}}, PGM_Idx), handle, serializer, use_compact_list, data, size)
     end
 

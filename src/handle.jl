@@ -6,7 +6,7 @@ function PGM_create_handle()
     end
     return handle
 end
-# create_handle()
+# PGM_create_handle()
 
 # Function to destroy a handle
 function PGM_destroy_handle(handle::Ptr{Cvoid})

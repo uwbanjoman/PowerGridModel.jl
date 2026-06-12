@@ -23,7 +23,7 @@ function PGM_create_deserializer_from_binary_buffer(handle::Ptr{Cvoid}, data_ptr
     function PGM_create_serializer(handle::Ptr{Cvoid}, dataset::Ptr{PGM_ConstDataset}, serialization_format::PGM_Idx)
         ccall((:PGM_create_serializer, pgm_lib), Ptr{PGM_Serializer}, (Ptr{Cvoid}, Ptr{PGM_ConstDataset}, PGM_Idx), handle, dataset, serialization_format)
     end
-    # pgm.create_serializer(handle,dset_ptr,0)
+    # PGM.PGM_create_serializer(handle,dset_ptr,0)
 
     function PGM_serializer_get_to_binary_buffer(handle::Ptr{Cvoid}, serializer::Ptr{PGM_Serializer}, use_compact_list::PGM_Idx, data::Ptr{Cvoid}, size::PGM_Idx)
         ccall((:PGM_serializer_get_to_binary_buffer, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Serializer}, PGM_Idx, Ptr{Ptr{Cchar}}, PGM_Idx), handle, serializer, use_compact_list, data, size)

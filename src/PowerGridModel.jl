@@ -13,6 +13,7 @@ end
 
 pgm_lib = lib_pgm_location()
 
+include("c_enums.jl")
 include("basics.jl")
 include("handle.jl")
 include("buffer.jl")

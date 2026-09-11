@@ -1,49 +1,161 @@
-# Function to create options
-function PGM_create_options(handle::Ptr{Cvoid})
-    options = ccall((:PGM_create_options, pgm_lib), Ptr{PGM_Options}, (Ptr{Cvoid},), handle)
-    if options == C_NULL
-        error("Failed to create PowerGridModel options")
-    end
-    return options
+# src/options.jl
+
+"""
+    PGM_create_options(handle)
+
+Create an option instance.
+
+The option is needed to run calculations. This function create a new option instance with the following default values: - calculation\\_type: PGM\\_power\\_flow - calculation\\_method: PGM\\_default\\_method - symmetric: 1 - err\\_tol: 1e-8 - max\\_iter: 20 - threading: -1 - short\\_circuit\\_voltage\\_scaling: PGM\\_short\\_circuit\\_voltage\\_scaling\\_maximum - experimental\\_features: PGM\\_experimental\\_features\\_disabled
+
+# Arguments
+* `handle`:
+# Returns
+The pointer to the option instance. Should be freed by [`PGM_destroy_options`](@ref)().
+"""
+function PGM_create_options(handle)
+    ccall((:PGM_create_options, libpower_grid_model_c), Ptr{PGM_Options}, (Ptr{PGM_Handle},), handle)
 end
 
-# Function to destroy options
-function PGM_destroy_options(options::Ptr{PGM_Options})
-    ccall((:PGM_destroy_options, pgm_lib), Cvoid, (Ptr{Cvoid},), options)
+"""
+    PGM_destroy_options(opt)
+
+Free an option instance.
+
+# Arguments
+* `opt`: The pointer to the option instance created by [`PGM_create_options`](@ref)().
+"""
+function PGM_destroy_options(opt)
+    ccall((:PGM_destroy_options, libpower_grid_model_c), Cvoid, (Ptr{PGM_Options},), opt)
 end
 
-function PGM_set_calculation_type(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, type::CalculationTtype)
-    ccall((:PGM_set_calculation_type, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, PGM_Idx(type))
+"""
+    PGM_set_calculation_type(handle, opt, type)
+
+Specify type of calculation.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `type`: See #[`PGM_CalculationType`](@ref) .
+"""
+function PGM_set_calculation_type(handle, opt, type)
+    ccall((:PGM_set_calculation_type, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, type)
 end
 
-function PGM_set_calculation_method(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, method::CalculationMethod)
-    ccall((:PGM_set_calculation_method, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, PGM_Idx(method))
+"""
+    PGM_set_calculation_method(handle, opt, method)
+
+Specify method of calculation.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `method`: See #[`PGM_CalculationMethod`](@ref) .
+"""
+function PGM_set_calculation_method(handle, opt, method)
+    ccall((:PGM_set_calculation_method, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, method)
 end
 
-function PGM_set_symmetric(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, sym::SymmetryType)
-    ccall((:PGM_set_symmetric, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, PGM_Idx(sym))
+"""
+    PGM_set_symmetric(handle, opt, sym)
+
+Specify if we are calculating symmetrically or asymmetrically.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `sym`: See #PGM\\_CalculationSymmetry . 1 for symmetric calculation; 0 for asymmetric calculation.
+"""
+function PGM_set_symmetric(handle, opt, sym)
+    ccall((:PGM_set_symmetric, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, sym)
 end
 
-function PGM_set_err_tol(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, err_tol::Cfloat)
-    ccall((:PGM_set_err_tol, pgm_lib),  Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, Cfloat), handle, options, err_tol)
+"""
+    PGM_set_err_tol(handle, opt, err_tol)
+
+Specify the error tolerance to stop iterations. Only applicable if using iterative method.
+
+It is in terms of voltage deviation per iteration in p.u.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `err_tol`: The relative votlage deviation tolerance.
+"""
+function PGM_set_err_tol(handle, opt, err_tol)
+    ccall((:PGM_set_err_tol, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, Cdouble), handle, opt, err_tol)
 end
 
-function PGM_set_max_iter(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, max_iter::PGM_Idx)
-    ccall((:PGM_set_max_iter, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, max_iter)
+"""
+    PGM_set_max_iter(handle, opt, max_iter)
+
+Specify maximum number of iterations. Only applicable if using iterative method.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `max_iter`: The maximum number of iterations.
+"""
+function PGM_set_max_iter(handle, opt, max_iter)
+    ccall((:PGM_set_max_iter, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, max_iter)
 end
 
-function PGM_set_threading(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, threading::PGM_Idx)
-    ccall((:PGM_set_threading, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, threading)
+"""
+    PGM_set_threading(handle, opt, threading)
+
+Specify the multi-threading strategy. Only applicable for batch calculation.
+
+# Arguments
+* `handle`:
+* `opt`: The pointer to the option instance.
+* `threading`: The value of the threading setting. See below: - -1: No multi-threading, calculate sequentially. - 0: use number of machine available threads. - >0: specify number of threads you want to calculate in parallel.
+"""
+function PGM_set_threading(handle, opt, threading)
+    ccall((:PGM_set_threading, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, threading)
 end
 
-function PGM_set_short_circuit_voltage_scaling(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, short_circuit_voltage_scaling::PGM_Idx)
-    ccall((:PGM_set_short_circuit_voltage_scaling, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, short_circuit_voltage_scaling)
+"""
+    PGM_set_short_circuit_voltage_scaling(handle, opt, short_circuit_voltage_scaling)
+
+Specify the voltage scaling min/max for short circuit calculations
+
+# Arguments
+* `handle`:
+* `opt`: pointer to option instance
+* `short_circuit_voltage_scaling`: See #[`PGM_ShortCircuitVoltageScaling`](@ref)
+"""
+function PGM_set_short_circuit_voltage_scaling(handle, opt, short_circuit_voltage_scaling)
+    ccall((:PGM_set_short_circuit_voltage_scaling, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, short_circuit_voltage_scaling)
 end
 
-function PGM_set_tap_changing_strategy(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, tap_changing_strategy::TapChangingStrategy)
-    ccall((:PGM_set_tap_changing_strategy, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, PGM_Idx(tap_changing_strategy))
+"""
+    PGM_set_tap_changing_strategy(handle, opt, tap_changing_strategy)
+
+Specify the tap changing strategy for power flow calculations
+
+# Arguments
+* `handle`:
+* `opt`: pointer to option instance
+* `tap_changing_strategy`: See #[`PGM_TapChangingStrategy`](@ref)
+"""
+function PGM_set_tap_changing_strategy(handle, opt, tap_changing_strategy)
+    ccall((:PGM_set_tap_changing_strategy, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, tap_changing_strategy)
 end
 
-function PGM_set_experimental_features(handle::Ptr{Cvoid}, options::Ptr{PGM_Options}, experimental_features::PGM_Idx)
-    ccall((:PGM_set_experimental_features, pgm_lib), Cvoid, (Ptr{Cvoid}, Ptr{PGM_Options}, PGM_Idx), handle, options, experimental_features)
+"""
+    PGM_set_experimental_features(handle, opt, experimental_features)
+
+Enable/disable experimental features.
+
+[Danger mode]
+
+The behavior of experimental features may not be final and no stability guarantees are made to the users. Features marked as 'experimental' as well as the behavior of experimental functionality itself may change over time.
+
+# Arguments
+* `handle`:
+* `opt`: pointer to option instance
+* `experimental_features`: See #[`PGM_ExperimentalFeatures`](@ref)
+"""
+function PGM_set_experimental_features(handle, opt, experimental_features)
+    ccall((:PGM_set_experimental_features, libpower_grid_model_c), Cvoid, (Ptr{PGM_Handle}, Ptr{PGM_Options}, PGM_Idx), handle, opt, experimental_features)
 end

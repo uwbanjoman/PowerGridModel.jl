@@ -18,6 +18,18 @@ Enumeration of short circuit voltage scaling.
     PGM_short_circuit_voltage_scaling_maximum = 1
 end
 
+"""
+    PGM_CalculationInitialization
+
+Enumeration of the calculation initializations.
+"""
+@cenum PGM_CalculationInitialization::UInt32 begin
+    PGM_calculation_initialization_default = 0
+    PGM_calculation_initialization_flat = 1
+    PGM_calculation_initialization_linear = 2
+    PGM_calculation_initialization_average_source = 3
+end
+
 @enum ComponentAttributeFilterOptions everything relevant
 """
     PGM_TapChangingStrategy
